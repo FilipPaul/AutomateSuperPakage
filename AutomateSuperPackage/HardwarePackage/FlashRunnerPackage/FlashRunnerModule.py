@@ -20,6 +20,10 @@ class FlashRunnerClass:
 
         def OpenAndWrite(self,Command):
             print(Command)
+            try:
+                self.ComInstance.close()
+            except:
+                print("Was Already closed")
             self.ComInstance.open()
             UpdateString = Command + "\r"
             self.ComInstance.write(UpdateString.encode('utf-8'))
@@ -40,7 +44,9 @@ class FlashRunnerClass:
             if -1 == packet.find(">"):
                 print("ERROR calling command: " + Command)
                 #exit()
+                return 0
             self.ComInstance.close()
+            return 1
             
         def sender_getc(self,size):
             return self.ComInstance.read(size) or None
