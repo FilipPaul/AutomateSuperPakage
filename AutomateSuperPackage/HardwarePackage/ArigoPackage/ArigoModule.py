@@ -16,7 +16,7 @@ class ArigoClass:
 
         def Write(self,Command):
             UpdateString = Command + "*"
-            print(UpdateString)
+            #print(UpdateString)
             self.ComInstance.write(UpdateString.encode('utf-8'))
 
         def setCOM(self,COMobject):
@@ -36,18 +36,21 @@ class ArigoClass:
             if -1 == packet.find("System ready\r".encode('utf-8')):
                 print("ERROR calling command: Open PORT")
                 return 0
-            print("OK")
+            else:
+                return 1
+            #print("OK")
             
 
         def NormalCommand(self,Command):
             self.Write(Command)
             packet = self.ComInstance.read_until("*".encode('utf-8'), 600)
-            print(packet)
+            #print(packet)
             packet = packet.decode('utf-8')
+            #print(packet)
             if -1 == packet.find("ACK*"):
-                print("ERROR calling command: " + Command)
-                return 0
+                print("ERROR calling command: " + Command + "*")
+                return [0,packet]
             #­self.ComInstance.close()
-            print("OK")
-            return 1
+            #print("OK")
+            return [1,packet]
             

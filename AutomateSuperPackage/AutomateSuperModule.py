@@ -8,3 +8,4 @@ class SuperClass:
 
     def printfun(self):
         print(self)
+
