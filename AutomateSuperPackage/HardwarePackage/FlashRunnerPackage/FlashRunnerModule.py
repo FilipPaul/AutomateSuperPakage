@@ -44,9 +44,9 @@ class FlashRunnerClass:
             if -1 == packet.find(">"):
                 print("ERROR calling command: " + Command)
                 #exit()
-                return 0
+                return 0,packet
             self.ComInstance.close()
-            return 1
+            return 1,packet
             
         def sender_getc(self,size):
             return self.ComInstance.read(size) or None
