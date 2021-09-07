@@ -33,7 +33,6 @@ class ArigoClass:
                 self.ComInstance.open()
 
             packet = self.ComInstance.read_until("\n".encode('utf-8'), 600)
-            print("PACKET")
             if -1 == packet.find("System ready\r".encode('utf-8')):
                 print("ERROR calling command: Open PORT")
                 return 0,packet
@@ -65,17 +64,17 @@ class ArigoClass:
                 ID_of_adapter = raw_ID_list[ID_POS_0_MSB - 1] + raw_ID_list[ID_POS_1 - 1] + raw_ID_list[ID_POS_2_LSB - 1]
                 return status,ID_of_adapter
         
-        def GetNeedleinStates(self,connected_adapter,YAML): #in form of string "IN_1", "IN_4", etc.. 
-            print("Needle state")
+        def GetNeedleinStates(self,connected_adapter,YAML): #in form of string "IN_1", "IN_4", etc..
             [status,message] = self.NormalCommand("READPINS")
+            POS_VECTOR= []
+            needle_state = []
             if status == True:
-                raw_ID_list = message.split(";")
-                POS_A = int(YAML["ADAPTERS"][connected_adapter]["PINOUT"]["SWITCH_NEEDLE_A"][-1:])
-                POS_B = int(YAML["ADAPTERS"][connected_adapter]["PINOUT"]["SWITCH_NEEDLE_B"][-1:])
-                POS_C = int(YAML["ADAPTERS"][connected_adapter]["PINOUT"]["SWITCH_NEEDLE_C"][-1:])
-                
-                needle_state = [raw_ID_list[POS_A - 1], raw_ID_list[POS_B - 1] , raw_ID_list[POS_C - 1]]
-                return status,needle_state
+               raw_ID_list = message.split(";")
+               #Iterate by letters A,B,C ...
+               for letters in range(ord('A'), ord('A') + len(YAML["ADAPTERS"][connected_adapter]["BOARD_IDS"]),1):
+                POS_VECTOR.append(int(YAML["ADAPTERS"][connected_adapter]["CONFIGURATION"]["PINOUT"]["SWITCH_NEEDLE_"+ chr(letters)][-1:]))
+                needle_state.append(raw_ID_list[POS_VECTOR[-1] - 1][-1:])
+            return status,needle_state
 
         def GetConnectedAdapter(self, YAML): #YAML is YAML config file
             find_adapter = ""
@@ -96,4 +95,29 @@ class ArigoClass:
                     result = False
 
             return result, find_adapter
+
+        def SetExtPort(self,EXT,vector, On_Off, current_state):
+            #This function change EXT port accordingly to the vector
+            #vector is a string of 1 and 0 like this LSB 000000000000000111000000 MSB (32 bit for 32 bit relay card)
+            #If instead of str vector is int input, this will change only 1 pin
+            #Function will set pins from vector asigned as 1 to Off or ON state according to the On_Off state
+            # and will not affect another pins,
+            if type(vector) == str: 
+                to_set_value = vector #1111100000000000000000000
+                if On_Off == True:
+                    new_state =  int(current_state,2) | int(to_set_value,2)
+                else:
+                    new_state =  int(current_state,2) & (~int(to_set_value,2))
+
+            elif type(vector) == int:
+                if On_Off == True:
+                    new_state = (int(current_state,2)) | (1<< 32 -vector)
+                else:
+                    new_state =  int(current_state,2) & (~(1<< 32 - vector))
             
+            new_state = bin(new_state)[2:].zfill(32) #get rid of 0b and fill with 0 to 32 bit length
+            to_send_string = to_set_string = ';'.join(new_state[i:i + 1] for i in range(0, len(new_state)))
+            [status, message] = self.NormalCommand("SETEXTPORT;"+ str(EXT) + ";" + to_send_string)
+            current_state = new_state
+            return status,message,current_state
+                    
