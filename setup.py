@@ -16,7 +16,7 @@ setup(
     long_description_content_type="text/markdown",
     #long_description=long_description,
     packages=find_packages(),
-    install_requires=['pyodbc', 'zeep', 'pyusb'],
+    install_requires=['pyodbc', 'zeep', 'pyusb', 'pyserial', "PyQt5", "PyQt5-tools","pyYaml"],
     keywords=['python', 'Flash', 'Database', 'Hardware', 'Flashrunner', 'AccesDatabase', 'CAN'],
     classifiers=[
         "Development Status :: 1 - Planning",

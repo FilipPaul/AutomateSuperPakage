@@ -33,6 +33,7 @@ class ArigoClass:
                 self.ComInstance.open()
 
             packet = self.ComInstance.read_until("\n".encode('utf-8'), 600)
+            print("PACKET")
             if -1 == packet.find("System ready\r".encode('utf-8')):
                 print("ERROR calling command: Open PORT")
                 return 0,packet
@@ -64,17 +65,17 @@ class ArigoClass:
                 ID_of_adapter = raw_ID_list[ID_POS_0_MSB - 1] + raw_ID_list[ID_POS_1 - 1] + raw_ID_list[ID_POS_2_LSB - 1]
                 return status,ID_of_adapter
         
-        def GetNeedleinStates(self,connected_adapter,YAML): #in form of string "IN_1", "IN_4", etc..
+        def GetNeedleinStates(self,connected_adapter,YAML): #in form of string "IN_1", "IN_4", etc.. 
+            #print("Needle state")
             [status,message] = self.NormalCommand("READPINS")
-            POS_VECTOR= []
-            needle_state = []
             if status == True:
-               raw_ID_list = message.split(";")
-               #Iterate by letters A,B,C ...
-               for letters in range(ord('A'), ord('A') + len(YAML["ADAPTERS"][connected_adapter]["BOARD_IDS"]),1):
-                POS_VECTOR.append(int(YAML["ADAPTERS"][connected_adapter]["CONFIGURATION"]["PINOUT"]["SWITCH_NEEDLE_"+ chr(letters)][-1:]))
-                needle_state.append(raw_ID_list[POS_VECTOR[-1] - 1][-1:])
-            return status,needle_state
+                raw_ID_list = message.split(";")
+                POS_A = int(YAML["ADAPTERS"][connected_adapter]["CONFIGURATION"]["PINOUT"]["SWITCH_NEEDLE_A"][-1:])
+                POS_B = int(YAML["ADAPTERS"][connected_adapter]["CONFIGURATION"]["PINOUT"]["SWITCH_NEEDLE_B"][-1:])
+                POS_C = int(YAML["ADAPTERS"][connected_adapter]["CONFIGURATION"]["PINOUT"]["SWITCH_NEEDLE_C"][-1:])
+                
+                needle_state = [raw_ID_list[POS_A - 1][-1:], raw_ID_list[POS_B - 1] , raw_ID_list[POS_C - 1]]
+                return status,needle_state
 
         def GetConnectedAdapter(self, YAML): #YAML is YAML config file
             find_adapter = ""
@@ -120,4 +121,4 @@ class ArigoClass:
             [status, message] = self.NormalCommand("SETEXTPORT;"+ str(EXT) + ";" + to_send_string)
             current_state = new_state
             return status,message,current_state
-                    
+            
