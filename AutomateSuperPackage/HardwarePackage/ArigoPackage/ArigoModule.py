@@ -66,7 +66,6 @@ class ArigoClass:
                 return status,ID_of_adapter
         
         def GetNeedleinStates(self,connected_adapter,YAML): #in form of string "IN_1", "IN_4", etc.. 
-<<<<<<< HEAD
             #print("Needle state")
             [status,message] = self.NormalCommand("READPINS")
             if status == True:
@@ -76,17 +75,6 @@ class ArigoClass:
                 POS_C = int(YAML["ADAPTERS"][connected_adapter]["CONFIGURATION"]["PINOUT"]["SWITCH_NEEDLE_C"][-1:])
                 
                 needle_state = [raw_ID_list[POS_A - 1][-1:], raw_ID_list[POS_B - 1] , raw_ID_list[POS_C - 1]]
-=======
-            print("Needle state")
-            [status,message] = self.NormalCommand("READPINS")
-            if status == True:
-                raw_ID_list = message.split(";")
-                POS_A = int(YAML["ADAPTERS"][connected_adapter]["PINOUT"]["SWITCH_NEEDLE_A"][-1:])
-                POS_B = int(YAML["ADAPTERS"][connected_adapter]["PINOUT"]["SWITCH_NEEDLE_B"][-1:])
-                POS_C = int(YAML["ADAPTERS"][connected_adapter]["PINOUT"]["SWITCH_NEEDLE_C"][-1:])
-                
-                needle_state = [raw_ID_list[POS_A - 1], raw_ID_list[POS_B - 1] , raw_ID_list[POS_C - 1]]
->>>>>>> 7d510c8fc7f18b33648b8ecf762fa95e0529aae1
                 return status,needle_state
 
         def GetConnectedAdapter(self, YAML): #YAML is YAML config file
