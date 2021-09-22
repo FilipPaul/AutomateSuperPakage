@@ -53,7 +53,7 @@ class SoapWsClass:
             return True, WS_result_Dictionary,result.product
         
         else:
-            return False, result.retFaultMsg,None
+            return False, {"FAULT MSG":result.retFaultMsg},None
 
     def SaveTestResults(self, WS_log_Dictionary):
         #Input Dictionary should be in form like this:.....
