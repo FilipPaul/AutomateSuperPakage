@@ -19,7 +19,7 @@ class FlashRunnerClass:
         
 
         def OpenAndWrite(self,Command):
-            #print(Command)
+            print(Command)
             try:
                 self.ComInstance.close()
             except:
@@ -40,9 +40,9 @@ class FlashRunnerClass:
             self.OpenAndWrite(Command)
             packet = self.ComInstance.read_until("\r".encode('utf-8'), 600)
             packet = packet.decode('utf-8')
-            #print(packet)
+            print(packet)
             if -1 == packet.find(">"):
-                #print("ERROR calling command: " + Command)
+                print("ERROR calling command: " + Command)
                 #exit()
                 return 0,packet
             self.ComInstance.close()

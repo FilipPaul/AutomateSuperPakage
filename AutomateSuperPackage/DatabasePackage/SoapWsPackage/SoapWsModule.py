@@ -38,21 +38,22 @@ class SoapWsClass:
 
             #Store Results into Dictionary
             WS_result_Dictionary = {
-                'RetStatus': bool(result.retStatus),
-                'product ID' : str(result.product) ,
-                'revision': str(result.revision),
+                #'RetStatus': bool(result.retStatus),
+                'PRODUCT ID' : str(result.product) ,
+                'REVISION': str(result.revision),
                 'lot'     : str(result.lot),
                 }
 
             for dictionaries in result.recipeAttributeList.attribute:
                 if dictionaries['value'] == '?':
-                    WS_result_Dictionary[dictionaries['name']] =  None
+                    ...
+                    #WS_result_Dictionary[dictionaries['name']] =  None
                 else:
                     WS_result_Dictionary[dictionaries['name']] = dictionaries['value']
-            return True, WS_result_Dictionary
+            return True, WS_result_Dictionary,result.product
         
         else:
-            return False, result.retFaultMsg
+            return False, result.retFaultMsg,None
 
     def SaveTestResults(self, WS_log_Dictionary):
         #Input Dictionary should be in form like this:.....
