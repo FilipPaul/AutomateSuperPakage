@@ -71,5 +71,6 @@ class SoapWsClass:
         WS_list_Of_keys_for_calling_function = []
         for keys in WS_log_Dictionary:
             WS_list_Of_keys_for_calling_function.append(WS_log_Dictionary[keys]) 
+            print(*WS_list_Of_keys_for_calling_function)
         result = self.client.service.SaveTestResults(*WS_list_Of_keys_for_calling_function)
-        return result.retStatus
+        return result.retStatus, result
