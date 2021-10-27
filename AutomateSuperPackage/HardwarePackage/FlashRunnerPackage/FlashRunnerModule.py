@@ -38,9 +38,12 @@ class FlashRunnerClass:
 
         def NormalCommand(self,Command):
             self.OpenAndWrite(Command)
-            packet = self.ComInstance.read_until("\r".encode('utf-8'), 600)
+            packet = self.ComInstance.read_until("\r".encode('utf-8'), 0xFFFFFFF)
             packet = packet.decode('utf-8')
             print(packet)
+            #with open("Log.txt","a") as file:
+            #    file.write("COMMAND: "+ Command + " --> : RESPONSE: " + packet)
+            #    file.close()
             if -1 == packet.find(">"):
                 print("ERROR calling command: " + Command)
                 #exit()

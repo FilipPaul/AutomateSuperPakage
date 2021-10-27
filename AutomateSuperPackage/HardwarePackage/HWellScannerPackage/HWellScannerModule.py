@@ -42,4 +42,18 @@ class HWellScannerClass:
                     #­self.ComInstance.close()
                     #print("OK")
                     return [1,packet]
+    
+        def NonBlockingRead(self):
+            if 0 < self.ComInstance.in_waiting:
+                packet = self.ComInstance.read_until("\r".encode('utf-8'), 600)
+                self.ComInstance.reset_input_buffer()
+                packet = packet.decode('utf-8')
+                #print(packet)
+                if -1 == packet.find("\r"):
+                    return [0,packet]
+                #­self.ComInstance.close()
+                #print("OK")
+                return [1,packet]
+            else:
+                return [0, "empty"]
                     

@@ -33,27 +33,60 @@ class SoapWsClass:
         self.client = Client(wsdl = wsdl)
 
     def GetPcbSnRecipe(self,station, user, SerialNumber):
-        result = self.client.service.GetPcbSnRecipe(str(station), str(user),str(SerialNumber))#zeep SOAP request
-        if bool(result.retStatus) == True:
+        try:
+            result = self.client.service.GetPcbSnRecipe(str(station), str(user),str(SerialNumber))#zeep SOAP request
+            if bool(result.retStatus) == True:
 
-            #Store Results into Dictionary
-            WS_result_Dictionary = {
-                #'RetStatus': bool(result.retStatus),
-                'PRODUCT ID' : str(result.product) ,
-                'REVISION': str(result.revision),
-                'lot'     : str(result.lot),
-                }
+                #Store Results into Dictionary
+                WS_result_Dictionary = {
+                    #'RetStatus': bool(result.retStatus),
+                    'PRODUCT ID' : str(result.product) ,
+                    'REVISION': str(result.revision),
+                    'lot'     : str(result.lot),
+                    }
 
-            for dictionaries in result.recipeAttributeList.attribute:
-                if dictionaries['value'] == '?':
-                    ...
-                    #WS_result_Dictionary[dictionaries['name']] =  None
-                else:
-                    WS_result_Dictionary[dictionaries['name']] = dictionaries['value']
-            return True, WS_result_Dictionary,result.product
-        
-        else:
-            return False, {"FAULT MSG":result.retFaultMsg},None
+                for dictionaries in result.recipeAttributeList.attribute:
+                    if dictionaries['value'] == '?':
+                        ...
+                        #WS_result_Dictionary[dictionaries['name']] =  None
+                    else:
+                        WS_result_Dictionary[dictionaries['name']] = dictionaries['value']
+                return True, WS_result_Dictionary,result.product
+            
+            else:
+                return False, {"FAULT MSG":result.retFaultMsg},None
+        except Exception as e:
+            print("ERROR IN GetPcbSnRecipe, line 59, Custom function\n")
+            print(e)
+            return False, {"FAULT MSG":"ERROR IN GetPcbSnRecipe, line 59"},None
+
+    def GetLotRecipe(self,station, user, SerialNumber):
+        try:
+            result = self.client.service.GetLotRecipe(str(station), str(user),str(SerialNumber))#zeep SOAP request
+            if bool(result.retStatus) == True:
+
+                #Store Results into Dictionary
+                WS_result_Dictionary = {
+                    #'RetStatus': bool(result.retStatus),
+                    'PRODUCT ID' : str(result.product) ,
+                    'REVISION': str(result.revision),
+                    'lot'     : SerialNumber,
+                    }
+
+                for dictionaries in result.recipeAttributeList.attribute:
+                    if dictionaries['value'] == '?':
+                        ...
+                        #WS_result_Dictionary[dictionaries['name']] =  None
+                    else:
+                        WS_result_Dictionary[dictionaries['name']] = dictionaries['value']
+                return True, WS_result_Dictionary,result.product
+            
+            else:
+                return False, {"FAULT MSG":result.retFaultMsg},None
+        except Exception as e:
+            print("ERROR IN GetPcbSnRecipe, line 59, Custom function\n")
+            print(e)
+            return False, {"FAULT MSG":"ERROR IN GetLotSnRecipe, line 89"},None
 
     def SaveTestResults(self, WS_log_Dictionary):
         #Input Dictionary should be in form like this:.....
