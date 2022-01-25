@@ -84,25 +84,29 @@ class SoapWsClass:
             else:
                 return False, {"FAULT MSG":result.retFaultMsg},None
         except Exception as e:
-            print("ERROR IN GetPcbSnRecipe, line 59, Custom function\n")
             print(e)
             return False, {"FAULT MSG":"ERROR IN GetLotSnRecipe, line 89"},None
 
     def SaveTestResults(self, WS_log_Dictionary):
         #Input Dictionary should be in form like this:.....
+
         #WS_log_Dictionary = {
         #    'station' : 'UPP Siemens Trutnov',
         #    'user'    : 'Filip Paul',
         #    'sn'      : 'LO/210823-012258',
         #    'startDateTime' : '2021-08-23T13:00:00',
         #    'endDateTime' : '2021-08-23T13:01:00',
-        #    'testResult' : 'FAIL',
+        #    'testResult' : 'FAIL', #FAIL or PASS only
         #    'logFile'     : '2021-08-23_log.txt',
-        #    'resultAttributeList' : [{'name': 'ATTR1','value': '22'},{'name': 'ATTR2','value': 'FE'}]
-        #}
+        #    'list_of_dictionaries': [{'name': 'hello', 'value': "gay"}, {'name': 'hello2', 'value': "gay2"}]
+        #    }
 
-        WS_list_Of_keys_for_calling_function = []
-        for keys in WS_log_Dictionary:
-            WS_list_Of_keys_for_calling_function.append(WS_log_Dictionary[keys]) 
-        result = self.client.service.SaveTestResults(*WS_list_Of_keys_for_calling_function)
-        return result.retStatus
+        result = self.client.service.SaveTestResults(WS_log_Dictionary['station'],
+        WS_log_Dictionary['user'],
+        WS_log_Dictionary['sn'],
+        WS_log_Dictionary['startDateTime'],
+        WS_log_Dictionary['endDateTime'],
+        WS_log_Dictionary['testResult'],
+        WS_log_Dictionary['logFile'],
+        {'attribute' : WS_log_Dictionary['list_of_dictionaries']})
+        return result

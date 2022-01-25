@@ -56,8 +56,10 @@ class ArigoClass:
             return [1,packet]
 
         def GetIdPinStates(self,INPUT_PIN_0_LSB, INPUT_PIN_1, INPUT_PIN_2_MSB): #in form of string "IN_1", "IN_4", etc.. 
-            [status,message] = self.NormalCommand("READPINS")
-            if status == True:
+            """To get status of wanted INPUT pins -> returns list in form of string like 100 -> means MSB is 1, LSB is 0  """
+            [status,message] = self.NormalCommand("READPINS")#return status of all input pins
+            if status == True: 
+                #parse response to get status of wanted pins
                 raw_ID_list = message.split(";")
                 ID_POS_2_LSB = int(INPUT_PIN_0_LSB[-1:])
                 ID_POS_1 = int(INPUT_PIN_1[-1:])
@@ -67,7 +69,19 @@ class ArigoClass:
                 return status,ID_of_adapter
         
         def GetNeedleinStates(self,connected_adapter,YAML): #in form of string "IN_1", "IN_4", etc.. 
-            #print("Needle state")
+            """Give me, which adapter is connected and YAML with following structure:
+            ADAPTERS:
+                ADAPTER_1:
+                    CONFIGURATION:
+                        PINOUT:
+                            SWITCH_NEEDLE_A #This represents position for DUT
+                            SWITCH_NEEDLE_B #please fill also these position even if there is less physical positions in adapter..
+                            SWITCH_NEEDLE_C
+                ADAPTER_2....
+            
+            And I will return you status of needles in form of list like [1,1,0],
+            please note, that status is negated, due to the common wiring in ACTIVE LOW format.."""
+                            
             [status,message] = self.NormalCommand("READPINS")
             if status == True:
                 raw_ID_list = message.split(";")
@@ -75,23 +89,38 @@ class ArigoClass:
                 POS_A = int(YAML["ADAPTERS"][connected_adapter]["CONFIGURATION"]["PINOUT"]["SWITCH_NEEDLE_A"][-1:])
                 POS_B = int(YAML["ADAPTERS"][connected_adapter]["CONFIGURATION"]["PINOUT"]["SWITCH_NEEDLE_B"][-1:])
                 POS_C = int(YAML["ADAPTERS"][connected_adapter]["CONFIGURATION"]["PINOUT"]["SWITCH_NEEDLE_C"][-1:])
+                try:
+                    #print(raw_ID_list)
+                    needle_state = [not int(raw_ID_list[POS_A - 1][-1:]), not int(raw_ID_list[POS_B - 1]) , not int(raw_ID_list[POS_C - 1])]
+                    #print("SWITCH NEEDLE STATE IS:", needle_state)
+                    return status,needle_state
                 
-                needle_state = [not int(raw_ID_list[POS_A - 1][-1:]), not int(raw_ID_list[POS_B - 1]) , not int(raw_ID_list[POS_C - 1])]
-                #print("SWITCH NEEDLE STATE IS:", needle_state)
-                return status,needle_state
+                except:
+                    return "BUG",[0, 0, 0]
 
         def GetConnectedAdapter(self, YAML): #YAML is YAML config file
+            """returns which adapter is connected based on .yaml file, which should have structure defined as follows:
+            ADAPTERS:
+                ADAPTER_1:
+                    CONFIGURATION
+                        PINOUT
+                            ID_PIN_0 : IN_4 #ARRIGO INPUT PIN, where ID detection is connected
+                            ID_PIN_1 : IN_5
+                            ID_PIN_2 : IN_6
+
+                ADAPTER_2....
+                """
             find_adapter = ""
             all_adapters = []
             for i in range (0,YAML["ADAPTERS"]["TOTAL_NUMBER_OF_ADAPTERS"]):
                 all_adapters.append("ADAPTER_" +  str(i+1) )
-            for adapter in all_adapters:
+            for adapter in all_adapters: # for each adapter in YAML file get ID_PINS of ARRIGO
                 ID_2 = YAML["ADAPTERS"][adapter]["CONFIGURATION"]["PINOUT"]["ID_PIN_2"]
                 ID_1 = YAML["ADAPTERS"][adapter]["CONFIGURATION"]["PINOUT"]["ID_PIN_1"]
                 ID_0 = YAML["ADAPTERS"][adapter]["CONFIGURATION"]["PINOUT"]["ID_PIN_0"]
                 [status, ID] = self.GetIdPinStates(ID_0, ID_1, ID_2)
                 #print(ID)
-                if ID == YAML["ADAPTERS"][adapter]["ID"]:
+                if ID == YAML["ADAPTERS"][adapter]["ID"]: #IF ID MATCH
                     find_adapter = adapter
                     result = True
                     

@@ -2,6 +2,7 @@ from AutomateSuperPackage.HardwarePackage.FlashRunnerPackage.FlashRunnerModule i
 from AutomateSuperPackage.HardwarePackage.ArigoPackage.ArigoModule import ArigoClass
 from AutomateSuperPackage.HardwarePackage.GwinstekGPD2323Package.GwinstekGPD2323Module import GwinstekGPD2323Class
 from AutomateSuperPackage.HardwarePackage.HWellScannerPackage.HWellScannerModule import HWellScannerClass
+from AutomateSuperPackage.HardwarePackage.AsiPackage.AsiModule import AsiClass
 class HardwareClass:
     def __init__(self):
         print("IM HARDWARE CLASS")
@@ -9,3 +10,4 @@ class HardwareClass:
         self.Arigo = ArigoClass()
         self.GwinstekGPD2323 = GwinstekGPD2323Class()
         self.HWellScanner = HWellScannerClass()
+        self.ASI = AsiClass()

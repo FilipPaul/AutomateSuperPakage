@@ -11,15 +11,16 @@ class FlashRunnerClass:
     def __init__(self):
         print("Hello Im FlashRunner Class")
         
-
     class SerialCommunication:
         ComInstance = serial.Serial()
         def __init__(self):
             print("Hello im SerialCommunication Class based on serial.Serial()")
+            self.current_response = ""
+            self.current_command = ""
         
 
         def OpenAndWrite(self,Command):
-            print(Command)
+            #print(Command)
             try:
                 self.ComInstance.close()
             except:
@@ -40,10 +41,12 @@ class FlashRunnerClass:
             self.OpenAndWrite(Command)
             packet = self.ComInstance.read_until("\r".encode('utf-8'), 0xFFFFFFF)
             packet = packet.decode('utf-8')
-            print(packet)
+            #print(packet)
             #with open("Log.txt","a") as file:
             #    file.write("COMMAND: "+ Command + " --> : RESPONSE: " + packet)
             #    file.close()
+            self.current_command = Command
+            self.current_response = packet
             if -1 == packet.find(">"):
                 print("ERROR calling command: " + Command)
                 #exit()
@@ -60,11 +63,15 @@ class FlashRunnerClass:
 
 
         def SendFileToCommand(self,Command,filename):
+            self.current_command = Command
             self.OpenAndWrite(Command)
             sender = YModem(self.sender_getc, self.sender_putc)
             #os.chdir(sys.path[0])
             file_path = os.path.abspath(filename)
-            sender.send_file(file_path)
+            if sender.send_file(file_path):
+                self.current_response = "OK"
+            else:
+                self.current_response = "ERROR"
             self.ComInstance.close()
 
 
