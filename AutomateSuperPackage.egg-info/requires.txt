@@ -1,0 +1,6 @@
+pyodbc
+zeep
+pyusb
+pyserial
+pyYaml
+Pillow

@@ -1,0 +1,21 @@
+Metadata-Version: 2.1
+Name: AutomateSuperPackage
+Version: 0.0.1
+Summary: Automation of production processes
+Home-page: UNKNOWN
+Author: Filip Paul
+Author-email: <filip.paul@email.cz
+License: UNKNOWN
+Keywords: python,Flash,Database,Hardware,Flashrunner,AccesDatabase,CAN
+Platform: UNKNOWN
+Classifier: Development Status :: 1 - Planning
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+UNKNOWN
+
